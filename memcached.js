@@ -2,6 +2,7 @@ import Memcached from 'memcached'
 
 
 // Connect to Memcached server
-var memcached = new Memcached([ 'localhost:11211' ]); 
+const memcachedURL = process.env.MEMCACHED_URL || 'localhost:11211';
+var memcached = new Memcached([ memcachedURL ]); 
 
 export { memcached }

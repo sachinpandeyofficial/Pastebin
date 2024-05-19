@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pastebin
+  labels:
+    app: pastebin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pastebin
+  template:
+    metadata:
+      labels:
+        app: pastebin
+    spec:
+      containers:
+        - name: pastebin
+          image: pastebin:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MONGO_URL
+              value: "mongodb://mongo:27017"
+            - name: MEMCACHED_URL
+              value: "memcached:11211"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pastebin-service
+spec:
+  selector:
+    app: pastebin
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: NodePort
+---
