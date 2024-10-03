@@ -16,7 +16,7 @@ router.get('/:id', async (req, res) => {
             getDataFromMongo(key, res);
         } else {
             if (data) {
-                console.log('Data found in Memcached:', data);
+                console.log('Data found in Memcached.', data);
                 res.send(data);
             } else {
                 console.log('Data not found in Memcached');
@@ -33,7 +33,7 @@ async function getDataFromMongo(key, res) {
         const data = await pastes.findOne({ _id: key });
 
         if (data) {
-            console.log('Data found in MongoDB:', data);
+            console.log('Data found in MongoDB.', data);
             // Set data in Memcached
             memcached.set(key, {
                 s3Link: data.s3Link,
@@ -43,13 +43,13 @@ async function getDataFromMongo(key, res) {
                 if (err) {
                     console.error('Error setting data in Memcached:', err);
                 } else {
-                    console.log('Data set in Memcached');
+                    console.log('Data set in Memcached.');
                 }
             });
             res.send(data);
         } else {
-            console.log('Data not found in MongoDB');
-            res.status(404).send('Data not found');
+            console.log('Data not found in MongoDB.');
+            res.status(404).send('Data not found!');
         }
     }
     catch(err){
