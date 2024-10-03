@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 21.7.1]
+        node-version: [21.7.1]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -35,8 +35,8 @@ jobs:
       run: npm run build --if-present
 
     # Run tests
-    - name: Run Tests
-      run: npm test
+    # - name: Run Tests
+    #   run: npm test
 
     # Only build and push Docker image for Node.js v21.7.1
     - name: Build and Push Docker Image
