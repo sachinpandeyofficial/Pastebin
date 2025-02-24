@@ -1,0 +1,77 @@
+# Zookeeper Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+      - name: zookeeper
+        image: wurstmeister/zookeeper:latest
+        ports:
+        - containerPort: 2181
+---
+# Zookeeper Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+spec:
+  type: ClusterIP
+  ports:
+  - port: 2181
+    targetPort: 2181
+  selector:
+    app: zookeeper
+---
+# Kafka Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-cluster       # Don't use name 'kafka', it is reserved for internal uses.
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-cluster
+  template:
+    metadata:
+      labels:
+        app: kafka-cluster
+    spec:
+      containers:
+      - name: kafka
+        image: wurstmeister/kafka:latest
+        ports:
+        - containerPort: 9092
+        env:
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: "zookeeper:2181"
+        - name: KAFKA_LISTENERS
+          value: "PLAINTEXT://0.0.0.0:9092"
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: "PLAINTEXT://172.26.176.233:30092" # Replace <NodeIP> with actual Node IP for external access
+---
+# Kafka Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-cluster
+spec:
+  type: NodePort            # LoadBalancer is not working because of some configuration issues in minikube environment
+  ports:
+  - port: 9092
+    targetPort: 9092
+    nodePort: 30092         # Exposed NodePort for external access
+  selector:
+    app: kafka-cluster
+
+
